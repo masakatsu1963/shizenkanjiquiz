@@ -1202,9 +1202,12 @@ function onCorrect(q) {
   }
   saveState();
 
-  // フラッシュ演出
+  // 問題カード・入力欄・ヒントを非表示
   const card = document.getElementById("quiz-card");
-  card.classList.add("flash-correct");
+  card.style.display = "none";
+  document.getElementById("quiz-hint-box").style.display = "none";
+  const inputRow = document.querySelector(".input-row");
+  if (inputRow) inputRow.style.display = "none";
 
   // 正解パネル表示
   document.getElementById("result-kanji").textContent  = q.kanji;
@@ -1237,8 +1240,15 @@ function onWrong(q, input) {
 function nextQuestion() {
   document.getElementById("result-panel").classList.remove("visible");
   document.getElementById("quiz-actions").classList.remove("hidden");
+
+  // 問題カード・入力欄・ヒントを再表示
   const card = document.getElementById("quiz-card");
+  card.style.display = "";
   card.classList.remove("flash-correct");
+  document.getElementById("quiz-hint-box").style.display = "";
+  const inputRow = document.querySelector(".input-row");
+  if (inputRow) inputRow.style.display = "";
+
   state.sessionIdx++;
   loadQuestion();
 }
@@ -1452,6 +1462,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // ── クイズ画面 ─────────────────────────────────────────
   document.getElementById("quiz-answer").addEventListener("keydown", e => {
     if (e.key === "Enter") submitAnswer();
+  });
+
+  // スマホでキーボード表示時に問題文（漢字）が隠れないようスクロール調整
+  document.getElementById("quiz-answer").addEventListener("focus", () => {
+    setTimeout(() => {
+      const card = document.getElementById("quiz-card");
+      const screen = document.querySelector(".quiz-screen");
+      if (card && screen) {
+        screen.scrollTo({ top: card.offsetTop, behavior: "smooth" });
+      }
+    }, 350);
   });
   document.getElementById("btn-submit").addEventListener("click", submitAnswer);
   document.getElementById("btn-hint").addEventListener("click", showHint);
