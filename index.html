@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a2e1a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="よむよぶ">
+  <meta name="description" content="自然・動物・植物・魚・鳥・虫・木など420問の難読漢字を学べる読みクイズ">
+  <title>よむよぶ — 難読漢字テスト</title>
+
+  <!-- PWA manifest インライン（外部ファイル不要） -->
+  <link rel="manifest" href="data:application/manifest+json,{
+    %22name%22:%22%E8%87%AA%E7%84%B6%E6%BC%A2%E5%AD%97%E3%82%AF%E3%82%A4%E3%82%BA%22,
+    %22short_name%22:%22%E6%BC%A2%E5%AD%97%E3%82%AF%E3%82%A4%E3%82%BA%22,
+    %22start_url%22:%22.%2F%22,
+    %22display%22:%22standalone%22,
+    %22background_color%22:%22%231a2e1a%22,
+    %22theme_color%22:%22%231a2e1a%22,
+    %22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231a2e1a'/%3E%3Ctext y='.9em' font-size='75' x='10'%3E%E6%A3%AE%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22any%22,%22type%22:%22image/svg+xml%22}]
+  }">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Google Fonts（オプション：オフライン時は系統フォントにフォールバック） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="app-bg"></div>
+<!-- 桜花びら Canvas（正解エフェクト） -->
+<canvas id="sakura-canvas"></canvas>
+<div id="app">
+
+
+  <!-- ══════════════════════════════════════════════════════
+       SCREEN 1: ホーム
+       ══════════════════════════════════════════════════════ -->
+  <div id="screen-home" class="screen active">
+
+    <!-- ヒーロー -->
+    <div class="home-hero">
+      <!-- 季節バッジ -->
+      <div id="season-badge">
+        <span id="season-emoji">🌸</span>
+        <span id="season-label">テーマは【春】</span>
+      </div>
+      <!-- CSS 花びらアニメーション装飾 -->
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="petal"></div>
+
+      <div class="home-title-deco">
+        <div class="deco-line"></div>
+        <span class="deco-icon">🌿</span>
+        <div class="deco-line"></div>
+      </div>
+      <div class="home-eyebrow">難読漢字テスト</div>
+      <img src="data:image/png;base64,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" class="home-logo" alt="よむよぶ">
+      <div class="home-subtitle">自然 ・ 動物 ・ 植物 ・ 魚 ・ 鳥 ・ 虫 ・ 木</div>
+    </div>
+
+    <!-- 統計チップ -->
+    <div class="home-stats">
+      <div class="stat-chip">
+        <span class="stat-val" id="home-points">0 pt</span>
+        <span class="stat-label">累計ポイント</span>
+      </div>
+      <div class="stat-chip">
+        <span class="stat-val" id="home-best">—</span>
+        <span class="stat-label">ベスト</span>
+      </div>
+    </div>
+
+    <!-- 難度選択 -->
+    <div class="home-section-title">難度を選ぶ</div>
+    <div class="level-select">
+      <button class="level-select-btn active" data-level="1">
+        初級<small>日常寄り</small>
+      </button>
+      <button class="level-select-btn" data-level="2">
+        中級<small>レア</small>
+      </button>
+      <button class="level-select-btn" data-level="3">
+        上級<small>超難</small>
+      </button>
+      <button class="level-select-btn" data-level="4">
+        最上級<small>極難</small>
+      </button>
+    </div>
+
+    <!-- スタートボタン -->
+    <button class="btn-start" id="btn-start">クイズを始める</button>
+
+
+    <!-- クレジット -->
+    <div class="home-credit">
+      2026 <a href="https://rengedo.asia/" target="_blank" rel="noopener">蓮華堂</a> All rights reserved.
+    </div>
+
+  </div><!-- /screen-home -->
+
+  <!-- 使い方モーダル -->
+
+
+
+  <!-- ══════════════════════════════════════════════════════
+       SCREEN 2: クイズ
+       ══════════════════════════════════════════════════════ -->
+  <div id="screen-quiz" class="screen">
+
+    <!-- ヘッダー（固定） -->
+    <div class="page-header">
+      <h2>読みを答えよう</h2>
+      <div class="quiz-progress-bar">
+        <span id="quiz-progress">1 / 10</span>
+      </div>
+    </div><!-- /page-header -->
+
+    <!-- 漢字カード（掛け軸スタイル） -->
+    <div class="quiz-card" id="quiz-card">
+      <div class="quiz-card-inner">
+        <div class="quiz-card-meta">
+          <span class="level-badge lv1" id="quiz-level-badge">初</span>
+          <span class="quiz-category-tag" id="quiz-category">自然</span>
+        </div>
+        <div class="card-deco-line"></div>
+        <div id="quiz-kanji">霰</div>
+        <div class="card-deco-line bottom"></div>
+        <!-- 獲得予定ポイント（ヒントごとに減少・難度ボーナス付き） -->
+        <div class="quiz-pts-row">
+          <span class="quiz-pts-label">獲得予定</span>
+          <span class="quiz-pts-value" id="quiz-pts">100</span>
+          <span class="quiz-pts-unit">pt</span>
+          <span class="quiz-pts-mult" id="quiz-pts-mult"></span>
+        </div>
+      </div>
+    </div><!-- /quiz-card -->
+
+    <!-- 入力行 -->
+    <div class="input-row">
+      <input
+        class="answer-input"
+        id="quiz-answer"
+        type="text"
+        placeholder="ひらがなで入力…"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="none"
+        spellcheck="false"
+      >
+      <button class="btn-submit" id="btn-submit">答える</button>
+    </div><!-- /input-row -->
+
+    <!-- ヒント＆スキップ -->
+    <div class="quiz-actions" id="quiz-actions">
+      <button class="btn-hint" id="btn-hint">ヒント（1）</button>
+      <button class="btn-skip" id="btn-skip">スキップ</button>
+    </div><!-- /quiz-actions -->
+
+    <!-- ヒント表示ボックス -->
+    <div id="quiz-hint-box"></div>
+
+    <!-- 正解パネル -->
+    <div class="result-panel" id="result-panel">
+      <div class="result-correct-label">✦ 正　解 ✦</div>
+      <div class="result-kanji-big" id="result-kanji">霰</div>
+      <div class="result-yomi-big"  id="result-yomi">あられ</div>
+      <div class="result-origin-text" id="result-origin"></div>
+      <div class="result-pts" id="result-pts">+100 pt</div>
+      <button class="btn-next" id="btn-next">納得！　次の問題へ →</button>
+    </div><!-- /result-panel -->
+
+  </div><!-- /screen-quiz -->
+
+
+  <!-- ══════════════════════════════════════════════════════
+       SCREEN 3: コレクション
+       ══════════════════════════════════════════════════════ -->
+  <div id="screen-collection" class="screen">
+
+    <!-- ヘッダー -->
+    <div class="page-header">
+      <h2>コレクション</h2>
+      <span class="coll-count-badge" id="coll-count">0/420</span>
+    </div><!-- /page-header -->
+
+    <!-- フィルタ -->
+    <div class="collection-filters" id="collection-filters">
+      <button class="filter-btn active" data-cat="全て">全て</button>
+      <button class="filter-btn" data-cat="自然">自然</button>
+      <button class="filter-btn" data-cat="動物">動物</button>
+      <button class="filter-btn" data-cat="植物">植物</button>
+      <button class="filter-btn" data-cat="魚">魚</button>
+      <button class="filter-btn" data-cat="鳥">鳥</button>
+      <button class="filter-btn" data-cat="虫">虫</button>
+      <button class="filter-btn" data-cat="木">木</button>
+    </div><!-- /collection-filters -->
+
+    <!-- グリッド -->
+    <div class="collection-grid" id="collection-grid"></div>
+
+    <!-- クレジット -->
+    <div class="home-credit page-credit">
+      2026 <a href="https://rengedo.asia/" target="_blank" rel="noopener">蓮華堂</a> All rights reserved.
+    </div>
+
+  </div><!-- /screen-collection -->
+
+
+  <!-- ══════════════════════════════════════════════════════
+       SCREEN: 使い方
+       ══════════════════════════════════════════════════════ -->
+  <div id="screen-howto" class="screen">
+
+    <!-- ヘッダー -->
+    <div class="page-header">
+      <h2>📖 アプリの使い方</h2>
+    </div>
+
+    <!-- コンテンツ -->
+    <div class="howto-page-body">
+      <div class="howto-section">
+        <h3>🌿 このアプリについて</h3>
+        <p>自然・動物・植物・魚・鳥・虫・木にまつわる難読漢字を出題するクイズアプリです。全500問、4段階の難易度があります。</p>
+      </div>
+      <div class="howto-section">
+        <h3>🎮 クイズの進め方</h3>
+        <p>1回10問ずつ出題されます。漢字の読み方をひらがなで入力して「答える」ボタンを押してください。正解するとポイントが加算され、コレクションに追加されます。</p>
+      </div>
+      <div class="howto-section">
+        <h3>💡 ヒント機能</h3>
+        <p>「ヒント」ボタンを押すと段階的にヒントが表示されます（最大3段階）。ヒントを使うほど獲得ポイントは減ります。</p>
+      </div>
+      <div class="howto-section">
+        <h3>📚 難易度</h3>
+        <p><strong>初級</strong>：日常でも見かける漢字　<strong>中級</strong>：レアな漢字　<strong>上級</strong>：超難問　<strong>最上級</strong>：極めて難しい難読漢字。</p>
+      </div>
+      <div class="howto-section">
+        <h3>🌸 季節テーマ</h3>
+        <p>現在の月に合わせた季節テーマで問題を優先出題します。ホーム右上の季節バッジをタップすると、好きな季節に切り替えられます。</p>
+      </div>
+      <div class="howto-section">
+        <h3>🗂 コレクション</h3>
+        <p>正解した漢字はコレクションに保存されます。カテゴリで絞り込んだり、漢字をタップして詳細（由来）を確認できます。</p>
+      </div>
+    </div>
+
+    <!-- クレジット -->
+    <div class="home-credit page-credit">
+      2026 <a href="https://rengedo.asia/" target="_blank" rel="noopener">蓮華堂</a> All rights reserved.
+    </div>
+
+  </div><!-- /screen-howto -->
+
+  <!-- ══════════════════════════════════════════════════════
+       SCREEN 4: セッション終了
+       ══════════════════════════════════════════════════════ -->
+  <div id="screen-finish" class="screen">
+    <div class="finish-body">
+      <div class="finish-emoji">🌿</div>
+      <div class="finish-title">お疲れさまでした</div>
+      <div class="finish-score">
+        正解 <span id="finish-correct">0</span> / <span id="finish-total">10</span> 問
+      </div>
+      <div class="finish-pts-wrap">
+        <span class="finish-pts-label">このセッションの獲得</span>
+        <div class="finish-pts-value">
+          <span id="finish-pts">0</span> pt
+          <span class="new-record-badge" id="finish-new-record" style="display:none">🏆 NEW BEST!</span>
+        </div>
+      </div>
+      <div class="finish-btns">
+        <button class="btn-primary" id="btn-finish-retry">もう一度チャレンジ</button>
+        <button class="btn-secondary" id="btn-finish-home">ホームへ戻る</button>
+      </div>
+    </div>
+  </div><!-- /screen-finish -->
+
+
+  <!-- ══════════════════════════════════════════════════════
+       BOTTOM NAV
+       （必ず全スクリーンの後・#app 直下に配置）
+       ══════════════════════════════════════════════════════ -->
+  <nav id="bnav">
+    <button class="nav-btn" data-screen="screen-home">
+      <span class="nav-icon">🏠</span>ホーム
+    </button>
+    <button class="nav-btn" data-screen="screen-howto">
+      <span class="nav-icon">📖</span>使い方
+    </button>
+    <button class="nav-btn" data-screen="screen-collection">
+      <span class="nav-icon">📚</span>コレクション
+    </button>
+  </nav><!-- /bnav -->
+
+  <!-- ══════════════════════════════════════════════════════
+       OVERLAYS
+       ══════════════════════════════════════════════════════ -->
+
+  <!-- コレクション詳細モーダル -->
+  <div class="modal-overlay" id="coll-detail-modal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <button class="modal-close-btn" id="coll-detail-close">✕</button>
+      <div class="detail-kanji-big" id="detail-kanji">霰</div>
+      <div class="detail-yomi-big"  id="detail-yomi">あられ</div>
+      <div class="detail-meta">
+        <span class="detail-tag" id="detail-cat">自然</span>
+        <span class="detail-tag" id="detail-level">初級</span>
+        <span class="detail-tag">獲得: <span id="detail-pts">100 pt</span></span>
+      </div>
+      <div class="detail-origin" id="detail-origin"></div>
+    </div>
+  </div><!-- /coll-detail-modal -->
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+</div><!-- /app -->
+
+<script src="script.js"></script>
+
+<!-- PWA Service Worker 登録（オプション：inline SW） -->
+<script>
+if ('serviceWorker' in navigator) {
+  // シンプルなインラインSW: キャッシュファースト
+  const swCode = `
+    const CACHE = 'shizenkanjiquiz-v1';
+    const ASSETS = ['./','./index.html','./style.css','./script.js'];
+    self.addEventListener('install', e => {
+      e.waitUntil(
+        caches.open(CACHE).then(c => c.addAll(ASSETS)).catch(() => {})
+      );
+      self.skipWaiting();
+    });
+    self.addEventListener('activate', e => {
+      e.waitUntil(caches.keys().then(keys =>
+        Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))
+      ));
+      self.clients.claim();
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        caches.match(e.request).then(r => r || fetch(e.request).catch(() => r))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+</script>
+</body>
+</html>
