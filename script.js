@@ -1150,6 +1150,16 @@ function loadQuestion() {
   state.hintStep   = 0;
   state.wrongCount = 0;
 
+  // 問題カード・入力欄・ヒント・結果パネルを確実にリセット
+  const card = document.getElementById("quiz-card");
+  card.style.display = "";
+  card.classList.remove("flash-correct","flash-wrong");
+  document.getElementById("result-panel").classList.remove("visible");
+  document.getElementById("quiz-hint-box").style.display = "";
+  document.getElementById("quiz-actions").classList.remove("hidden");
+  const inputRow = document.querySelector(".input-row");
+  if (inputRow) inputRow.style.display = "";
+
   const q = state.currentQ;
   document.getElementById("quiz-kanji").textContent = q.kanji;
   document.getElementById("quiz-level-badge").textContent =
@@ -1166,10 +1176,6 @@ function loadQuestion() {
     isLast ? "結果発表！" : "納得！　次の問題へ →";
   document.getElementById("quiz-answer").focus();
   updatePtsDisplay(false); // ポイントをリセット（アニメなし）
-
-  // 正誤フラッシュリセット
-  const card = document.getElementById("quiz-card");
-  card.classList.remove("flash-correct","flash-wrong");
 }
 
 function submitAnswer() {
@@ -1468,7 +1474,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("quiz-answer").addEventListener("focus", () => {
     setTimeout(() => {
       const card = document.getElementById("quiz-card");
-      const screen = document.querySelector(".quiz-screen");
+      const screen = document.getElementById("screen-quiz");
       if (card && screen) {
         screen.scrollTo({ top: card.offsetTop, behavior: "smooth" });
       }
