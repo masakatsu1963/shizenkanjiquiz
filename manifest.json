@@ -1,0 +1,28 @@
+{
+  "name": "よむよぶ — 難読漢字テスト",
+  "short_name": "よむよぶ",
+  "description": "自然・動物・植物・魚・鳥・虫・木など420問の難読漢字を学べる読みクイズ",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF8F5",
+  "theme_color": "#FF85A2",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["education", "games"]
+}
